@@ -22,10 +22,13 @@ This app is for those of us who have accepted that willpower is a finite resourc
 
 ## Installation
 
-1. Clone this repository
-2. Open `SleepTimer.xcodeproj` in Xcode
-3. Build and run
-4. Drag to Applications if you want to keep it around (you do)
+```bash
+git clone https://github.com/MacL3an/sleep-timer.git
+cd sleep-timer
+xcodebuild -project SleepTimer.xcodeproj -scheme SleepTimer -configuration Release build SYMROOT=build
+cp -r build/Release/SleepTimer.app /Applications/
+open /Applications/SleepTimer.app
+```
 
 ## Usage
 
