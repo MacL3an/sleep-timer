@@ -1,0 +1,12 @@
+# Xcode
+build/
+DerivedData/
+*.xcuserstate
+*.xcworkspace
+xcuserdata/
+
+# macOS
+.DS_Store
+
+# Claude
+.claude/
