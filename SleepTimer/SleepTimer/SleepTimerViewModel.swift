@@ -1,5 +1,6 @@
 import Foundation
 import UserNotifications
+import ServiceManagement
 
 struct DaySchedule: Codable, Equatable {
     var isEnabled: Bool
@@ -20,6 +21,9 @@ class SleepTimerViewModel: ObservableObject {
 
     @Published var isTimerActive = false
     @Published var timeRemaining: TimeInterval = 0
+    @Published var launchAtLogin: Bool = false {
+        didSet { updateLaunchAtLogin() }
+    }
 
     private var timer: Timer?
     private var targetDate: Date?
@@ -49,6 +53,7 @@ class SleepTimerViewModel: ObservableObject {
 
     init() {
         loadSchedule()
+        loadLaunchAtLogin()
         scheduleNextTimer()
     }
 
@@ -69,6 +74,27 @@ class SleepTimerViewModel: ObservableObject {
            let schedule = try? JSONDecoder().decode([DaySchedule].self, from: data),
            schedule.count == 7 {
             weeklySchedule = schedule
+        }
+    }
+
+    // MARK: - Launch at Login
+
+    private func loadLaunchAtLogin() {
+        launchAtLogin = SMAppService.mainApp.status == .enabled
+    }
+
+    private func updateLaunchAtLogin() {
+        do {
+            if launchAtLogin {
+                try SMAppService.mainApp.register()
+            } else {
+                try SMAppService.mainApp.unregister()
+            }
+        } catch {
+            // Revert on failure
+            DispatchQueue.main.async {
+                self.launchAtLogin = SMAppService.mainApp.status == .enabled
+            }
         }
     }
 

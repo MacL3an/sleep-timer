@@ -57,6 +57,9 @@ struct ContentView: View {
 
             Divider()
 
+            Toggle("Launch at Login", isOn: $viewModel.launchAtLogin)
+                .toggleStyle(.checkbox)
+
             Button("Quit") {
                 NSApplication.shared.terminate(nil)
             }
