@@ -169,6 +169,11 @@ class SleepTimerViewModel: ObservableObject {
         isTimerActive = false
         timeRemaining = 0
         hasShownWarning = false
+
+        // Schedule the next occurrence
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1) { [weak self] in
+            self?.scheduleNextTimer()
+        }
     }
 
     func snooze() {
