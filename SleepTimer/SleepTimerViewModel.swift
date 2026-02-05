@@ -124,6 +124,12 @@ class SleepTimerViewModel: ObservableObject {
 
             guard let scheduledDate = calendar.date(from: components) else { continue }
 
+            // Skip if this matches the last triggered/cancelled date
+            if let last = lastTriggeredDate,
+               calendar.isDate(last, equalTo: scheduledDate, toGranularity: .minute) {
+                continue
+            }
+
             // Must be in the future (at least 10 seconds from now)
             if scheduledDate > now.addingTimeInterval(10) {
                 return scheduledDate
@@ -138,11 +144,8 @@ class SleepTimerViewModel: ObservableObject {
     func scheduleNextTimer() {
         guard let nextDate = calculateNextScheduledDate() else { return }
 
-        // Prevent scheduling the same time twice
-        if let last = lastTriggeredDate,
-           Calendar.current.isDate(last, equalTo: nextDate, toGranularity: .minute) {
-            return
-        }
+        // Clear lastTriggeredDate since we're scheduling a different time
+        lastTriggeredDate = nil
 
         startTimer(targetDate: nextDate)
     }
@@ -163,6 +166,9 @@ class SleepTimerViewModel: ObservableObject {
     }
 
     func cancelTimer() {
+        // Remember this target so we don't reschedule it
+        lastTriggeredDate = targetDate
+
         timer?.invalidate()
         timer = nil
         targetDate = nil
